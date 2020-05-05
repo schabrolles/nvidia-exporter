@@ -2,6 +2,7 @@ DATE     = $(shell date +%Y%m%d%H%M)
 IMAGE    ?= bugroger/nvidia-exporter
 VERSION  := $(DATE)
 GOOS     ?= $(shell go env | grep GOOS | cut -d'"' -f2)
+GOARCH   ?= $(shell uname -m)
 BINARIES := nvidia-exporter
 
 LDFLAGS := -X github.com/bugroger/nvidia-exporter/main.VERSION=$(VERSION)
@@ -17,7 +18,7 @@ GOFILES  := $(wildcard $(GOFILES))
 all: $(BINARIES:%=bin/$(GOOS)/%)
 
 bin/%: $(GOFILES) Makefile
-	GOOS=$(*D) GOARCH=amd64 go build $(GOFLAGS) -v -i -o $(@D)/$(@F) .
+	GOOS=$(*D) GOARCH=$(GOARCH) go build $(GOFLAGS) -v -i -o $(@D)/$(@F) .
 
 build: 
 	docker build $(BUILD_ARGS) -t $(IMAGE):$(VERSION) -t $(IMAGE):latest .
